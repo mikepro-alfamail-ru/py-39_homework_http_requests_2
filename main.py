@@ -7,14 +7,17 @@ class YaUploader:
     def __init__(self, file_path: str):
         self.file_path = file_path
         self.file_name = os.path.split(file_path)[-1]
-        self.apiurl = 'https://cloud-api.yandex.net/v1/disk/resources/upload?path=/netology_hmwrk'
+        self.params = {
+            'path': f'/netology_hmwrk/{self.file_name}',
+            'overwrite': 'true'
+        }
+        self.apiurl = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
 
     def get_upload_url(self):
         auth = {
             'Authorization': f'OAuth {ya_token}'
         }
-        response = requests.get(f'{self.apiurl}/{self.file_name}&overwrite=true', headers=auth)
-        # print(response.text)
+        response = requests.get(self.apiurl, params=self.params, headers=auth)
         return json.loads(response.text).get('href')
 
     def upload(self):
@@ -27,7 +30,7 @@ class YaUploader:
             return 'Ошибка'
 
 if __name__ == '__main__':
-    uploader = YaUploader('e:\\my_folder\\file.txt')
+    uploader = YaUploader('c:\\my_folder\\file.txt')
     result = uploader.upload()
     if result == 201:
         print(f'Сервер ответил - {result}, значит все ок')
